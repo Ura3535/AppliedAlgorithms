@@ -1,12 +1,15 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <forward_list>
+#include <string>
+#include <sstream>
 
 
 struct StringSet {
     static const uint32_t base = 31;
 	static const uint32_t table_size = 1.2e6;
-    std::vector<std::forward_list<std::pair<std::string, int>>> table;
+    std::vector<std::forward_list<std::pair<std::string, size_t>>> table;
 
 	StringSet() : table(table_size) {}
 
@@ -51,19 +54,19 @@ struct StringSet {
         return find(s) != nullptr;
     }
     
-    std::vector<std::pair<std::string, int>> V1() {
-        std::vector<std::pair<std::string, int>> result;
+    std::vector<std::string> V2() {
+        std::vector<std::string> result;
         for (const auto& bucket : table) {
             for (const auto& p : bucket) {
-				if (p.second > 1)
-                    result.push_back(p);
+				if (is_polinom(p.first))
+                    result.push_back(p.first);
             }
         }
         return result;
 	}
 
 private:
-	std::pair<std::string, int>* find(const std::string& s) {
+	std::pair<std::string, size_t>* find(const std::string& s) {
         auto& bucket = get_bucket(s);
         for (auto it = bucket.begin(); it != bucket.end(); ++it) {
             if (it->first == s) {
@@ -77,55 +80,60 @@ private:
         uint32_t h = hash(s);
         return table[h % table_size];
     }
+
+    static bool is_polinom(const std::string& s) {
+        for(size_t i = 0; i < s.size() / 2; ++i) {
+            if (s[i] != s[s.size() - 1 - i]) {
+                return false;
+            }
+		}
+		return true;
+    }
 };
 
 
 int main()
 {
-	std::ios::sync_with_stdio(false);
-	std::cin.tie(nullptr);
-	std::cout.tie(nullptr);
     StringSet set;
-	char command = '0';
-	std::string s;
-    while (true)
-    {
-		std::cin >> command;
-        switch (command)
+	std::string line;
+
+    std::ifstream input("input.txt");
+    std::ofstream output("output.txt");
+
+    while (std::getline(input, line)) {
+        if (line.empty()) continue;
+
+        std::istringstream iss(line);
+        char op;
+        std::string str;
+
+		iss >> op;
+        if (op == '#') break;
+		iss >> str;
+        switch (op)
         {
-            case '#':
-            {
-                return 0;
-            }
 			case '+':
             {
-                std::cin >> s;
-                set.insert(s);
+                set.insert(str);
                 break;
             }
 			case '-':
             {
-                std::cin >> s;
-                set.erase(s);
+                set.erase(str);
                 break;
             }
 			case '?':
             {
-                std::cin >> s;
-                std::cout << (set.contains(s) ? "YES" : "NO") << std::endl;
+                output << (set.contains(str) ? "Y" : "N");
                 break;
             }
-			case 'V':
-			{
-				auto v = set.V1();
-				for (const auto& p : v) {
-					std::cout << p.first << " " << p.second << std::endl;
-				}
-				break;
-			}
         default:
             break;
         }
     }
 
+    auto v = set.V2();
+    for (const auto& p : v) {
+        std::cerr << p << ' ';
+    }
 }

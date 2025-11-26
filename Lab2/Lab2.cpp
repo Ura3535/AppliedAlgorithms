@@ -126,7 +126,7 @@ int main() {
     constexpr double p = 0.01;
     const size_t m = (size_t)(-1.0 * n * log(p) / (log(2) * log(2)));
     const size_t k = (size_t)(log(2) * m / n);
-	std::cerr << "m: " << m << ", k: " << k << std::endl;
+	std::cerr << "m: " << m << ", k: " << k << '\n';
 
 	std::vector<std::pair<char, std::string>> operations;
     std::string line;
@@ -154,8 +154,8 @@ int main() {
     auto ht_time = measure_time([&]() {
         ht_result = testHT(operations);
 		});
-	std::cerr << "Bloom Filter time: " << bf_time.count() << " ms" << std::endl;
-	std::cerr << "Hash Table time: " << ht_time.count() << " ms" << std::endl;
+	std::cerr << "Bloom Filter time: " << bf_time.count() << " ms" << '\n';
+	std::cerr << "Hash Table time: " << ht_time.count() << " ms" << '\n';
     
 	size_t count = 0, mistake = 0;
 
@@ -167,9 +167,9 @@ int main() {
             }
         }
 	}
-	std::cerr << "Total 'Y' in Hash Table: " << count << std::endl;
-	std::cerr << "False positives in Bloom Filter: " << mistake << std::endl;
-	std::cerr << "False positive rate: " << (double)mistake / count * 100 << " %" << std::endl;
+	std::cerr << "Total 'Y' in Hash Table: " << count << '\n';
+	std::cerr << "False positives in Bloom Filter: " << mistake << '\n';
+	std::cerr << "False positive rate: " << (double)mistake / count * 100 << " %" << '\n';
 
-	output << bf_result << std::endl;
+	output << bf_result << '\n';
 }
